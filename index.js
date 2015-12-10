@@ -1,10 +1,9 @@
-var defaultConfig = require('config');
-var ddpClient = require('ddp');
-var ddpLogin = require('ddp-login');
-var sonumiLogger = require('sonumi-logger');
+var config = require('config');
+var ddpclient = require('ddp');
+var login = require('ddp-login');
+var logger = require('sonumi-logger');
 
-var logger, client, login, config;
-var loggedIn = false;
+var client, loggedIn = false;
 
 function connectionCallback(error)
 {
@@ -38,18 +37,26 @@ function connectionCallback(error)
     );
 }
 
-function Connector(dependencies)
+function Connector(/*dependencies*/)
 {
+    /*
+    dependencies = typeof dependencies !== 'undefined' ? dependencies : {};
+
     logger = typeof dependencies['logger'] !== 'undefined' ? dependencies['logger'] : new sonumiLogger();
     login = typeof dependencies['login'] !== 'undefined' ? dependencies['login'] : ddpLogin;
     config = typeof dependencies['config'] !== 'undefined' ? dependencies['config'] : defaultConfig;
-    client = typeof dependencies['client'] !== 'undefined' ? dependencies['client'] :
-        new ddpClient({ host: config.server.host, port: config.server.port });
+    client = typeof dependencies['client'] !== 'undefined' ? dependencies['client']
+        : new ddpClient({ host: config.server.host, port: config.server.port });
+    */
+
+
 }
 
 Connector.prototype = {
     connect: function () {
         logger.log('attempting connection');
+
+        client = ddpclient({ host: config.server.host, port: config.server.port });
 
         client.connect(connectionCallback);
 
