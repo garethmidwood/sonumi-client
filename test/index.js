@@ -6,11 +6,21 @@ var expect = require('chai').expect,
 
 
 describe("Connect to DDP server", function() {
-    var loggerMock, ddpclientMock, clientMock, loginMock, configMock, connectionMock, connectionConfig, connector;
+    var loggerMock,
+        sonumiLoggerMock,
+        ddpclientMock,
+        clientMock,
+        loginMock,
+        configMock,
+        connectionMock,
+        connector;
 
     beforeEach(function() {
         loggerMock = sinon.stub();
         loggerMock.log = sinon.stub();
+        loggerMock.addLogFile = sinon.stub();
+        sonumiLoggerMock = sinon.stub();
+        sonumiLoggerMock.create = sinon.stub().returns(loggerMock);
         clientMock = sinon.stub();
         clientMock.connect = sinon.stub().callsArg(0);
         clientMock.on = sinon.stub();
@@ -29,6 +39,9 @@ describe("Connect to DDP server", function() {
                 "port": "3000",
                 "user": "test@example.com",
                 "pass": "password"
+            },
+            "logging": {
+                "logDir": "/tmp/"
             }
         };
 
@@ -36,7 +49,8 @@ describe("Connect to DDP server", function() {
             config: configMock,
             ddpclient: ddpclientMock,
             login: loginMock,
-            logger: loggerMock
+            logger: loggerMock,
+            sonumiLogger: sonumiLoggerMock
         });
 
         connector = new sonumiConnector();
@@ -67,6 +81,7 @@ describe("Connect to DDP server", function() {
 
 describe("Configuration", function() {
     var loggerMock,
+        sonumiLoggerMock,
         ddpclientMock,
         clientMock,
         loginMock,
@@ -77,9 +92,11 @@ describe("Configuration", function() {
 
     beforeEach(function () {
         config = { host: 'localhost', port: '1234' };
-
         loggerMock = sinon.stub();
         loggerMock.log = sinon.stub();
+        loggerMock.addLogFile = sinon.stub();
+        sonumiLoggerMock = sinon.stub();
+        sonumiLoggerMock.create = sinon.stub().returns(loggerMock);
         clientMock = sinon.stub();
         clientMock.connect = sinon.stub().callsArg(0);
         clientMock.on = sinon.stub();
@@ -98,6 +115,9 @@ describe("Configuration", function() {
                 "port": "1234",
                 "user": "test@example.com",
                 "pass": "password"
+            },
+            "logging": {
+                "logDir": "/tmp/"
             }
         };
 
@@ -105,7 +125,8 @@ describe("Configuration", function() {
             config: configMock,
             ddpclient: ddpclientMock,
             login: loginMock,
-            logger: loggerMock
+            logger: loggerMock,
+            sonumiLogger: sonumiLoggerMock
         });
 
         connector = new sonumiConnector();
