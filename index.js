@@ -42,7 +42,7 @@ function connectionCallback(error)
 function Connector()
 {
     var logDirectory = config.logging.logDir;
-    logger = sonumiLogger.create(logDirectory);
+    logger = sonumiLogger.init(logDirectory);
     logger.addLogFile('info', logDirectory + '/connector-info.log', 'info');
 }
 
