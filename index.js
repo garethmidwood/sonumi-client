@@ -50,7 +50,7 @@ Connector.prototype = {
     connect: function () {
         logger.log('attempting connection');
 
-        client = ddpclient({ host: config.server.host, port: config.server.port });
+        client = new ddpclient({ host: config.server.host, port: config.server.port });
 
         client.connect(connectionCallback);
 
