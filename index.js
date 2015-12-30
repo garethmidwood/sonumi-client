@@ -69,6 +69,9 @@ Connector.prototype = {
     observe: function (publication) {
         logger.log('Added observer for ' + publication);
         return client.observe(publication);
+    },
+    collections: function() {
+        return client.collections;
     }
 };
 
