@@ -72,6 +72,9 @@ Connector.prototype = {
     },
     collections: function() {
         return client.collections;
+    },
+    call: function(command, params, callback) {
+        return client.call(command, params, callback);
     }
 };
 
