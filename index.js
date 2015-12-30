@@ -57,11 +57,14 @@ Connector.prototype = {
             });
         });
     },
-    subscribe: function (subscription) {
+    subscribe: function (publication) {
         // subscribe to commands
-        client.subscribe(subscription, [], function () {
-            logger.log('subscription complete: ' + subscription);
+        client.subscribe(publication, [], function () {
+            logger.log('subscription complete: ' + publication);
         });
+    },
+    observe: function (publication) {
+        return client.observe(publication);
     }
 };
 

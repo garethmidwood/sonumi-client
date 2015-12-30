@@ -92,7 +92,23 @@ describe("Connect to DDP server", function() {
             function() {
                 connector.subscribe(subscriptionName);
 
-                expect(clientMock.subscribe.calledWith(subscriptionName)).to.be.true;
+                assert(clientMock.subscribe.calledWith(subscriptionName));
+
+                done();
+            }
+        );
+    });
+
+    it('should observe a publication from the client', function () {
+        var publicationName = 'people';
+
+        var connectorPromise = connector.connect();
+
+        connectorPromise.then(
+            function() {
+                connector.observe(publicationName);
+
+                assert(clientMock.observe.calledWith(publicationName));
 
                 done();
             }
