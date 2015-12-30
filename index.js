@@ -59,11 +59,15 @@ Connector.prototype = {
     },
     subscribe: function (publication) {
         // subscribe to commands
-        client.subscribe(publication, [], function () {
-            logger.log('subscription complete: ' + publication);
+        return new Promise(function(resolve, reject) {
+            client.subscribe(publication, [], function () {
+                logger.log('subscription complete: ' + publication);
+                resolve();
+            });
         });
     },
     observe: function (publication) {
+        logger.log('Added observer for ' + publication);
         return client.observe(publication);
     }
 };

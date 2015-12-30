@@ -90,11 +90,15 @@ describe("Connect to DDP server", function() {
 
         connectorPromise.then(
             function() {
-                connector.subscribe(subscriptionName);
+                var subscribePromise = connector.subscribe(subscriptionName);
 
-                assert(clientMock.subscribe.calledWith(subscriptionName));
+                subscribePromise.then(
+                    function() {
+                        assert(clientMock.subscribe.calledWith(subscriptionName));
 
-                done();
+                        done();
+                    }
+                );
             }
         );
     });
