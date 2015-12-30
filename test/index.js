@@ -20,7 +20,7 @@ describe("Connect to DDP server", function() {
         loggerMock.log = sinon.stub();
         loggerMock.addLogFile = sinon.stub();
         sonumiLoggerMock = sinon.stub();
-        sonumiLoggerMock.create = sinon.stub().returns(loggerMock);
+        sonumiLoggerMock.init = sinon.stub().returns(loggerMock);
         clientMock = sinon.stub();
         clientMock.connect = sinon.stub().callsArg(0);
         clientMock.on = sinon.stub();
@@ -28,8 +28,8 @@ describe("Connect to DDP server", function() {
         loginMock = sinon.spy();
         connectionMock = sinon.stub();
         connectionMock.connect = sinon.stub();
-        ddpclientMock = sinon.stub();
-        ddpclientMock.returns(clientMock);
+        ddpclientMock = function() { return clientMock; };
+
 
         clientMock.returns(connectionMock);
 
@@ -76,65 +76,5 @@ describe("Connect to DDP server", function() {
         connector.subscribe(subscriptionName);
 
         expect(clientMock.subscribe.calledWith(subscriptionName)).to.be.true;
-    });
-});
-
-describe("Configuration", function() {
-    var loggerMock,
-        sonumiLoggerMock,
-        ddpclientMock,
-        clientMock,
-        loginMock,
-        configMock,
-        connectionMock,
-        connector,
-        config;
-
-    beforeEach(function () {
-        config = { host: 'localhost', port: '1234' };
-        loggerMock = sinon.stub();
-        loggerMock.log = sinon.stub();
-        loggerMock.addLogFile = sinon.stub();
-        sonumiLoggerMock = sinon.stub();
-        sonumiLoggerMock.create = sinon.stub().returns(loggerMock);
-        clientMock = sinon.stub();
-        clientMock.connect = sinon.stub().callsArg(0);
-        clientMock.on = sinon.stub();
-        clientMock.subscribe = sinon.spy();
-        loginMock = sinon.spy();
-        connectionMock = sinon.stub();
-        connectionMock.connect = sinon.stub();
-        ddpclientMock = sinon.stub();
-        ddpclientMock.withArgs(config).returns(clientMock);
-
-        clientMock.returns(connectionMock);
-
-        configMock = {
-            "server": {
-                "host": "localhost",
-                "port": "1234",
-                "user": "test@example.com",
-                "pass": "password"
-            },
-            "logging": {
-                "logDir": "/tmp/"
-            }
-        };
-
-        sonumiConnector.__set__({
-            config: configMock,
-            ddpclient: ddpclientMock,
-            login: loginMock,
-            logger: loggerMock,
-            sonumiLogger: sonumiLoggerMock
-        });
-
-        connector = new sonumiConnector();
-    });
-
-    it('should create a client using the server host and port config params', function () {
-        connector.connect();
-
-        assert(ddpclientMock.calledWith(config));
     });
 });
