@@ -12,7 +12,6 @@ describe("Connect to DDP server", function() {
         clientMock,
         loginMock,
         configMock,
-        connectionMock,
         connector;
 
     beforeEach(function() {
@@ -25,13 +24,9 @@ describe("Connect to DDP server", function() {
         clientMock.connect = sinon.stub().callsArg(0);
         clientMock.on = sinon.stub();
         clientMock.subscribe = sinon.spy();
-        loginMock = sinon.spy();
-        connectionMock = sinon.stub();
-        connectionMock.connect = sinon.stub();
+        loginMock = sinon.stub();
+        loginMock.loginWithEmail = sinon.stub().callsArgWith(3, null, { token: '1234' });
         ddpclientMock = function() { return clientMock; };
-
-
-        clientMock.returns(connectionMock);
 
         configMock = {
             "server": {
@@ -48,7 +43,7 @@ describe("Connect to DDP server", function() {
         sonumiConnector.__set__({
             config: configMock,
             ddpclient: ddpclientMock,
-            login: loginMock,
+            ddplogin: loginMock,
             logger: loggerMock,
             sonumiLogger: sonumiLoggerMock
         });
@@ -56,25 +51,51 @@ describe("Connect to DDP server", function() {
         connector = new sonumiConnector();
     });
 
-    it('should connect to the client', function () {
-        connector.connect();
+    it('should connect to the client', function (done) {
+        var connectorPromise = connector.connect();
+
+        connectorPromise.then(function() { done(); });
 
         assert(clientMock.connect.calledOnce);
     });
 
-    it('should login to the client after establishing a connection', function () {
-        connector.connect();
+    it('should login to the client with details from config', function (done) {
+        var connectorPromise = connector.connect();
 
-        expect(loginMock.callCount).to.equal(1);
+        connectorPromise.then(
+            function() {
+                var loginPromise = connector.login();
+
+                loginPromise.then(
+                    function() {
+                        expect(
+                            loginMock.loginWithEmail.calledWith(
+                                clientMock,
+                                configMock.server.user,
+                                configMock.server.pass
+                            )
+                        );
+
+                        done();
+                    }
+                );
+            }
+        );
     });
 
     it('should subscribe to the supplied publication from the client', function () {
         var subscriptionName = 'people';
 
-        connector.connect();
+        var connectorPromise = connector.connect();
 
-        connector.subscribe(subscriptionName);
+        connectorPromise.then(
+            function() {
+                connector.subscribe(subscriptionName);
 
-        expect(clientMock.subscribe.calledWith(subscriptionName)).to.be.true;
+                expect(clientMock.subscribe.calledWith(subscriptionName)).to.be.true;
+
+                done();
+            }
+        );
     });
 });
