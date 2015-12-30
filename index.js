@@ -18,7 +18,7 @@ Connector.prototype = {
         client = new ddpclient({ host: config.server.host, port: config.server.port });
 
         return new Promise(function(resolve, reject) {
-            logger.log('attempting connection');
+            logger.log('attempting connection to ' + config.server.host + ':' + config.server.port);
 
             client.connect(function(error) {
                 if (error) {
@@ -43,7 +43,7 @@ Connector.prototype = {
     },
     login: function() {
         return new Promise(function(resolve, reject) {
-            logger.log('attempting login');
+            logger.log('attempting login as ' + config.server.user);
 
             ddplogin.loginWithEmail(client, config.server.user, config.server.pass, function (error, userInfo) {
                 if (error) {
