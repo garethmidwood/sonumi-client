@@ -78,15 +78,3 @@ Connector.prototype = {
 };
 
 module.exports = Connector;
-
-
-
-
-
-//'pub_commands'
-/*
- // start observing commands
- var commandHandler = new commandHandler(client);
-
- commandHandler.register_handler('led', new led(this));
- */
