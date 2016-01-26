@@ -1,2 +1,2 @@
-# sonumi-connector
-sonumi.com - server connection module
+# sonumi-client
+sonumi.com - client connection module
