@@ -2,17 +2,17 @@ var expect = require('chai').expect,
     assert = require('chai').assert,
     sinon  = require('sinon'),
     rewire = require('rewire'),
-    sonumiConnector = rewire("../index");
+    sonumiClient = rewire("../index");
 
 
 describe("Connect to DDP server", function() {
     var loggerMock,
         sonumiLoggerMock,
-        ddpclientMock,
-        clientMock,
+        ddpMock,
+        ddpClientMock,
         loginMock,
         configMock,
-        connector;
+        client;
 
     beforeEach(function() {
         loggerMock = sinon.stub();
@@ -20,13 +20,13 @@ describe("Connect to DDP server", function() {
         loggerMock.addLogFile = sinon.stub();
         sonumiLoggerMock = sinon.stub();
         sonumiLoggerMock.init = sinon.stub().returns(loggerMock);
-        clientMock = sinon.stub();
-        clientMock.connect = sinon.stub().callsArg(0);
-        clientMock.on = sinon.stub();
-        clientMock.subscribe = sinon.spy();
+        ddpClientMock = sinon.stub();
+        ddpClientMock.connect = sinon.stub().callsArg(0);
+        ddpClientMock.on = sinon.stub();
+        ddpClientMock.subscribe = sinon.spy();
         loginMock = sinon.stub();
         loginMock.loginWithEmail = sinon.stub().callsArgWith(3, null, { token: '1234' });
-        ddpclientMock = function() { return clientMock; };
+        ddpMock = function() { return ddpClientMock; };
 
         configMock = {
             "server": {
@@ -40,37 +40,37 @@ describe("Connect to DDP server", function() {
             }
         };
 
-        sonumiConnector.__set__({
+        sonumiClient.__set__({
             config: configMock,
-            ddpclient: ddpclientMock,
+            ddp: ddpMock,
             ddplogin: loginMock,
             logger: loggerMock,
             sonumiLogger: sonumiLoggerMock
         });
 
-        connector = new sonumiConnector();
+        client = new sonumiClient();
     });
 
-    it('should connect to the client', function (done) {
-        var connectorPromise = connector.connect();
+    it('should connect to the client', function () {
+        var clientPromise = client.connect();
 
-        connectorPromise.then(function() { done(); });
+        clientPromise.then(function() { done(); });
 
-        assert(clientMock.connect.calledOnce);
+        assert(ddpClientMock.connect.calledOnce);
     });
 
-    it('should login to the client with details from config', function (done) {
-        var connectorPromise = connector.connect();
+    it('should login to the client with details from config', function () {
+        var clientPromise = client.connect();
 
-        connectorPromise.then(
+        clientPromise.then(
             function() {
-                var loginPromise = connector.login();
+                var loginPromise = client.login();
 
                 loginPromise.then(
                     function() {
                         expect(
                             loginMock.loginWithEmail.calledWith(
-                                clientMock,
+                                ddpClientMock,
                                 configMock.server.user,
                                 configMock.server.pass
                             )
@@ -86,15 +86,15 @@ describe("Connect to DDP server", function() {
     it('should subscribe to the supplied publication from the client', function () {
         var subscriptionName = 'people';
 
-        var connectorPromise = connector.connect();
+        var clientPromise = client.connect();
 
-        connectorPromise.then(
+        clientPromise.then(
             function() {
-                var subscribePromise = connector.subscribe(subscriptionName);
+                var subscribePromise = client.subscribe(subscriptionName);
 
                 subscribePromise.then(
                     function() {
-                        assert(clientMock.subscribe.calledWith(subscriptionName));
+                        assert(ddpClientMock.subscribe.calledWith(subscriptionName));
 
                         done();
                     }
@@ -106,13 +106,13 @@ describe("Connect to DDP server", function() {
     it('should observe a publication from the client', function () {
         var publicationName = 'people';
 
-        var connectorPromise = connector.connect();
+        var clientPromise = client.connect();
 
-        connectorPromise.then(
+        clientPromise.then(
             function() {
-                connector.observe(publicationName);
+                client.observe(publicationName);
 
-                assert(clientMock.observe.calledWith(publicationName));
+                assert(ddpClientMock.observe.calledWith(publicationName));
 
                 done();
             }
