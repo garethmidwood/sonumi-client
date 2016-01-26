@@ -58,7 +58,6 @@ Connector.prototype = {
         });
     },
     subscribe: function (publication) {
-        // subscribe to commands
         return new Promise(function(resolve, reject) {
             client.subscribe(publication, [], function () {
                 logger.log('subscription complete: ' + publication);
