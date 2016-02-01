@@ -14,25 +14,35 @@ function Client()
 }
 
 Client.prototype = {
-    connect: function () {
-        ddpclient = new ddp({ host: config.server.host, port: config.server.port });
+    connected: false,
+    connect: function (reconnectionCallback) {
+        ddpclient = new ddp({ host: config.server.host, port: config.server.port, autoReconnect : false });
+
+        var self = this;
 
         return new Promise(function(resolve, reject) {
             logger.log('attempting connection to ' + config.server.host + ':' + config.server.port);
 
             ddpclient.connect(function(error) {
                 if (error) {
+                    self.connected = false;
                     logger.error('connection error: ' + error.message);
                     reject('Connection error');
                     return;
                 }
 
+                self.connected = true;
+
                 ddpclient.on('socket-close', function (code, message) {
+                    self.connected = false;
                     logger.log('Connection closed with code: ' + code + ' and message: ' + message);
+                    reconnectionCallback();
                 });
 
                 ddpclient.on('socket-error', function (error) {
+                    self.connected = false;
                     logger.error('Socket error: ' + error);
+                    reconnectionCallback();
                 });
 
                 logger.log('connected successfully');
