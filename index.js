@@ -16,7 +16,7 @@ function Client()
 Client.prototype = {
     connected: false,
     connect: function (reconnectionCallback) {
-        ddpclient = new ddp({ host: config.server.host, port: config.server.port, autoReconnect : false });
+        ddpclient = new ddp({ host: config.server.host, port: config.server.port, autoReconnect : true });
 
         var self = this;
 
